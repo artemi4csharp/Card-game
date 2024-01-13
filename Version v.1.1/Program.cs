@@ -20,10 +20,12 @@ namespace ConsoleApp3
         static int EnemyScore = 0;
         static int input = 0;
         static int[] indexes = { 1, 2, 3, 4, 5 };
+        static string[] BattlePhrases = { "Draw", "Cmon maaan that's too easy", "Never back down never what? Never give up!", "GG bro..." };
+        static int Battleresult = 0;
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            string path = "C:\\Games\\ConsoleApp3\\ConsoleApp3\\Papka\\Text.txt";
+            string path = "C:\\Games\\ConsoleApp3\\ConsoleApp3\\Papka\\Text2.txt";
             while (true)
             {
                 Card[] cards = GetCardsFromFile(path);
@@ -88,6 +90,8 @@ namespace ConsoleApp3
                     Thread.Sleep(5000);
                     Battle(TempCard, EnemyTempCard);
                     Thread.Sleep(5000);
+                    AfterBattle(enemyHand, playersHand, enemyCards, playersCards, field);
+                    Thread.Sleep(3000);
                     Console.Clear();
                     ClearField(enemyHand, playersHand, enemyCards, playersCards, field);
                     // add card to field
@@ -100,7 +104,7 @@ namespace ConsoleApp3
                     // add points
                     // check for end
 
-                    
+
                 }
                 WriteResult();
                 MyScore = 0;
@@ -188,12 +192,41 @@ namespace ConsoleApp3
             if (card1.HP > card2.HP)
             {
                 MyScore += 1;
+                Battleresult = 1;
             }
             else if (card1.HP < card2.HP)
             {
                 EnemyScore += 1;
+                Battleresult = -1;
             }
-
+            else
+                Battleresult = 0;
+        }
+        private static void AfterBattle(Hand EnemyHand, Hand PlayersHand, Card[] EnemyCards, Card[] PlayersCards, Field field1)
+        {
+            Console.Clear();
+            Console.WriteLine($"Score: {MyScore}:{EnemyScore}");
+            Console.WriteLine();
+            EnemyHand.DrawHand(EnemyCards, false);
+            for (int i = 0; i < 8; i++)
+                Console.WriteLine();
+            Console.Write("        ");
+            if (Battleresult == 0)
+                Console.Write(BattlePhrases[0]);
+            else if (Battleresult == 1)
+                Console.Write(BattlePhrases[1]);
+            else if (Battleresult == -1)
+            {
+                if (PlayersCards[0] == null && PlayersCards[1] == null && PlayersCards[2] == null && PlayersCards[3] == null && PlayersCards[4] == null && EnemyCards[0] == null && EnemyCards[1] == null && EnemyCards[2] == null && EnemyCards[3] == null && EnemyCards[4] == null)
+                    Console.Write(BattlePhrases[3]);
+                else
+                    Console.Write(BattlePhrases[2]);
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                Console.WriteLine();
+            }
+            PlayersHand.DrawHand(PlayersCards, true);
         }
         private static void ClearField(Hand EnemyHand, Hand PlayersHand, Card[] EnemyCards, Card[] PlayersCards, Field field1)
         {
@@ -441,5 +474,4 @@ namespace ConsoleApp3
         }
     }
 }
-
 
