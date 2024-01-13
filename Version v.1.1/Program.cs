@@ -103,15 +103,16 @@ namespace ConsoleApp3
                     
                 }
                 WriteResult();
+                MyScore = 0;
+                EnemyScore = 0;
                 Console.WriteLine("Реванш?");
                 Console.WriteLine("Пробіл - реванш");
                 Console.WriteLine("Усе інше - вийти з гри");
                 ConsoleKeyInfo KeyInput = Console.ReadKey();
-                if (KeyInput.Equals(ConsoleKey.Spacebar))
+                if (KeyInput.Key == ConsoleKey.Spacebar)
                     continue;
                 else
-                    Environment.Exit(0);
-
+                    break;
             }
         }
         private static Card[] GetCardsFromFile(string path)
