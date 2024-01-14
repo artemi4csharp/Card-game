@@ -211,15 +211,14 @@ namespace ConsoleApp3
             for (int i = 0; i < 8; i++)
                 Console.WriteLine();
             Console.Write("        ");
-            if (Battleresult == 0)
+            if (PlayersCards[0] == null && PlayersCards[1] == null && PlayersCards[2] == null && PlayersCards[3] == null && PlayersCards[4] == null && EnemyCards[0] == null && EnemyCards[1] == null && EnemyCards[2] == null && EnemyCards[3] == null && EnemyCards[4] == null)
+                Console.Write(BattlePhrases[3]);
+            else if (Battleresult == 0)
                 Console.Write(BattlePhrases[0]);
             else if (Battleresult == 1)
                 Console.Write(BattlePhrases[1]);
             else if (Battleresult == -1)
             {
-                if (PlayersCards[0] == null && PlayersCards[1] == null && PlayersCards[2] == null && PlayersCards[3] == null && PlayersCards[4] == null && EnemyCards[0] == null && EnemyCards[1] == null && EnemyCards[2] == null && EnemyCards[3] == null && EnemyCards[4] == null)
-                    Console.Write(BattlePhrases[3]);
-                else
                     Console.Write(BattlePhrases[2]);
             }
             for (int i = 0; i < 7; i++)
@@ -474,4 +473,7 @@ namespace ConsoleApp3
         }
     }
 }
+
+
+
 
