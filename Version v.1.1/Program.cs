@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Threading;
 
 namespace ConsoleApp3
 {
-    enum ESlotType
-    {
-        Empty,
-        Text,
-        Card,
-        EnemyCard
-    }
     internal class Program
     {
         static int MyScore = 0;
@@ -33,8 +25,8 @@ namespace ConsoleApp3
                 Card[] enemyCards = { cards[5], cards[6], cards[7], cards[8], cards[9] };
                 Card TempCard;
                 Card EnemyTempCard;
-                Hand enemyHand = new Hand(15, 9, enemyCards);
-                Hand playersHand = new Hand(15, 9, playersCards);
+                Hand enemyHand = new Hand(15, 9);
+                Hand playersHand = new Hand(15, 9);
                 Field field = new Field(16);
                 List<int> indexes = new List<int> { 1, 2, 3, 4, 5 };
                 List<int> EnemyIndexes = new List<int> { 0, 1, 2, 3, 4 };
@@ -113,9 +105,7 @@ namespace ConsoleApp3
                 Console.WriteLine("Пробіл - реванш");
                 Console.WriteLine("Усе інше - вийти з гри");
                 ConsoleKeyInfo KeyInput = Console.ReadKey();
-                if (KeyInput.Key == ConsoleKey.Spacebar)
-                    continue;
-                else
+                if (KeyInput.Key != ConsoleKey.Spacebar)
                     break;
             }
         }
@@ -219,7 +209,7 @@ namespace ConsoleApp3
                 Console.Write(BattlePhrases[1]);
             else if (Battleresult == -1)
             {
-                    Console.Write(BattlePhrases[2]);
+                Console.Write(BattlePhrases[2]);
             }
             for (int i = 0; i < 7; i++)
             {
@@ -290,8 +280,6 @@ namespace ConsoleApp3
             Height = height;
         }
         public int Height;
-        public Card card1 { get; set; }
-        public Card card2 { get; set; }
         public void DrawField()
         {
             for (int i = 0; i < Height; i++)
@@ -302,7 +290,7 @@ namespace ConsoleApp3
     }
     public class Hand
     {
-        public Hand(int height, int width, Card[] cards)
+        public Hand(int height, int width)
         {
             Width = width;
             Height = height;
