@@ -102,11 +102,14 @@ namespace ConsoleApp3
                 MyScore = 0;
                 EnemyScore = 0;
                 Console.WriteLine("Реванш?");
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Пробіл - реванш");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Усе інше - вийти з гри");
                 ConsoleKeyInfo KeyInput = Console.ReadKey();
                 if (KeyInput.Key != ConsoleKey.Spacebar)
                     break;
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
         private static Card[] GetCardsFromFile(string path)
@@ -140,7 +143,7 @@ namespace ConsoleApp3
             Console.WriteLine($"Score: {MyScore}:{EnemyScore}");
             Console.WriteLine();
             EnemyHand.DrawHand(EnemyCards, false);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
                 Console.WriteLine();
             Console.Write("          ");
             Console.Write($"{card1.Name}       ");
@@ -164,7 +167,7 @@ namespace ConsoleApp3
             Console.Write("Dmg:   ");
             Console.Write($"0{card2.Damage}");
             Console.WriteLine();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Console.WriteLine();
             }
@@ -211,7 +214,7 @@ namespace ConsoleApp3
             {
                 Console.Write(BattlePhrases[2]);
             }
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine();
             }
@@ -231,14 +234,22 @@ namespace ConsoleApp3
             Console.Clear();
             if (MyScore > EnemyScore)
             {
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Ви виграли! Туда цього бота!");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Рахунок: {MyScore}:{EnemyScore}");
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"D:\МУШ\zvuk-pobedyi-vyiigryisha.wav");
                 player.Play();
             }
             else if (MyScore < EnemyScore)
             {
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Ви програли! І хто тепер бот???");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Рахунок: {MyScore}:{EnemyScore}");
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"D:\МУШ\zvuk-proigryisha.wav");
                 player.Play();
@@ -461,7 +472,6 @@ namespace ConsoleApp3
         }
     }
 }
-
 
 
 
