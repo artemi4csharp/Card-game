@@ -20,6 +20,8 @@ namespace ConsoleApp3
         static int EnemyScore = 0;
         static int input = 0;
         static int[] indexes = { 1, 2, 3, 4, 5 };
+        static string[] BattlePhrases = { "Draw", "Cmon maaan that's too easy", "Never back down never what? Never give up!", "GG bro..." };
+        static int Battleresult = 0;
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -88,6 +90,8 @@ namespace ConsoleApp3
                     Thread.Sleep(5000);
                     Battle(TempCard, EnemyTempCard);
                     Thread.Sleep(5000);
+                    AfterBattle(enemyHand, playersHand, enemyCards, playersCards, field);
+                    Thread.Sleep(3000);
                     Console.Clear();
                     ClearField(enemyHand, playersHand, enemyCards, playersCards, field);
                     // add card to field
@@ -100,19 +104,20 @@ namespace ConsoleApp3
                     // add points
                     // check for end
 
-                    
+
                 }
                 WriteResult();
                 MyScore = 0;
                 EnemyScore = 0;
                 Console.WriteLine("Реванш?");
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Пробіл - реванш");
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Усе інше - вийти з гри");
                 ConsoleKeyInfo KeyInput = Console.ReadKey();
-                if (KeyInput.Key == ConsoleKey.Spacebar)
-                    continue;
-                else
+                if (KeyInput.Key != ConsoleKey.Spacebar)
                     break;
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
         private static Card[] GetCardsFromFile(string path)
@@ -120,7 +125,7 @@ namespace ConsoleApp3
             // read the file
             string[] lines = File.ReadAllLines(path);
             // transform the text in the file into cards
-            Card[] cards = new Card[lines.Length / 3];
+            Card[] cards = new Card[lines.Length / 4];
             for (int i = 0; i < lines.Length; i += 4)
             {
                 string name = lines[i];
@@ -171,7 +176,13 @@ namespace ConsoleApp3
             Console.Write("Dmg:   ");
             Console.Write($"0{card2.Damage}");
             Console.WriteLine();
-            for (int i = 0; i < 3; i++)
+            Console.Write("          ");
+            Console.Write("Spd:   ");
+            Console.Write($"0{card1.AttackSpeed}");
+            Console.Write("      ");
+            Console.Write("Spd:   ");
+            Console.Write($"0{card2.AttackSpeed}");
+            for (int i = 0; i < 8; i++)
             {
                 Console.WriteLine();
             }
@@ -179,22 +190,51 @@ namespace ConsoleApp3
         }
         private static void Battle(Card card1, Card card2)
         {
-            while (card1.HP > 0 && card2.HP > 0)
-            {
+            for (int i = 0; i < card1.AttackSpeed; i++)
                 card2.GetDamage(card1.Damage);
+            for (int i = 0; i < card2.AttackSpeed; i++)
                 card1.GetDamage(card2.Damage);
-            }
             System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"D:\sekira-i-mech-soshlis-v-jestokoy-shvatke.wav");
             player.Play();
             if (card1.HP > card2.HP)
             {
                 MyScore += 1;
+                Battleresult = 1;
             }
             else if (card1.HP < card2.HP)
             {
                 EnemyScore += 1;
+                Battleresult = -1;
             }
-
+            else
+            {
+                Battleresult = 0;
+            }
+        }
+        private static void AfterBattle(Hand EnemyHand, Hand PlayersHand, Card[] EnemyCards, Card[] PlayersCards, Field field1)
+        {
+            Console.Clear();
+            Console.WriteLine($"Score: {MyScore}:{EnemyScore}");
+            Console.WriteLine();
+            EnemyHand.DrawHand(EnemyCards, false);
+            for (int i = 0; i < 8; i++)
+                Console.WriteLine();
+            Console.Write("        ");
+            if (PlayersCards[0] == null && PlayersCards[1] == null && PlayersCards[2] == null && PlayersCards[3] == null && PlayersCards[4] == null && EnemyCards[0] == null && EnemyCards[1] == null && EnemyCards[2] == null && EnemyCards[3] == null && EnemyCards[4] == null)
+                Console.Write(BattlePhrases[3]);
+            else if (Battleresult == 0)
+                Console.Write(BattlePhrases[0]);
+            else if (Battleresult == 1)
+                Console.Write(BattlePhrases[1]);
+            else if (Battleresult == -1)
+            {
+                Console.Write(BattlePhrases[2]);
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                Console.WriteLine();
+            }
+            PlayersHand.DrawHand(PlayersCards, true);
         }
         private static void ClearField(Hand EnemyHand, Hand PlayersHand, Card[] EnemyCards, Card[] PlayersCards, Field field1)
         {
@@ -210,14 +250,22 @@ namespace ConsoleApp3
             Console.Clear();
             if (MyScore > EnemyScore)
             {
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Ви виграли! Туда цього бота!");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Рахунок: {MyScore}:{EnemyScore}");
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"D:\МУШ\zvuk-pobedyi-vyiigryisha.wav");
                 player.Play();
             }
             else if (MyScore < EnemyScore)
             {
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Ви програли! І хто тепер бот???");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Рахунок: {MyScore}:{EnemyScore}");
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"D:\МУШ\zvuk-proigryisha.wav");
                 player.Play();
@@ -227,253 +275,248 @@ namespace ConsoleApp3
                 Console.WriteLine("Нічия! Потна катка!");
                 Console.WriteLine($"Рахунок: {MyScore}:{EnemyScore}");
             }
-
         }
-    }
-    public class Card
-    {
-        public Card(string name, int damage, int hP, int attackSpeed)
+        public class Card
         {
-            Name = name;
-            Damage = damage;
-            HP = hP;
-            AttackSpeed = attackSpeed;
-        }
-
-        public string Name { get; private set; }
-        public int Damage { get; private set; }
-        public int HP { get; private set; }
-        public int AttackSpeed { get; private set; }
-
-        public void GetDamage(int value)
-        {
-            HP -= value;
-            if (HP <= 0)
+            public Card(string name, int damage, int hP, int attackSpeed)
             {
-                HP = 0;
+                Name = name;
+                Damage = damage;
+                HP = hP;
+                AttackSpeed = attackSpeed;
+            }
+
+            public string Name { get; private set; }
+            public int Damage { get; private set; }
+            public int HP { get; private set; }
+            public int AttackSpeed { get; private set; }
+
+            public void GetDamage(int value)
+            {
+                HP -= value;
             }
         }
-    }
-    public class Field
-    {
-        public Field(int height)
+        public class Field
         {
-            Height = height;
-        }
-        public int Height;
-        public Card card1 { get; set; }
-        public Card card2 { get; set; }
-        public void DrawField()
-        {
-            for (int i = 0; i < Height; i++)
+            public Field(int height)
             {
-                Console.WriteLine();
+                Height = height;
+            }
+            public int Height;
+            public Card card1 { get; set; }
+            public Card card2 { get; set; }
+            public void DrawField()
+            {
+                for (int i = 0; i < Height; i++)
+                {
+                    Console.WriteLine();
+                }
             }
         }
-    }
-    public class Hand
-    {
-        public Hand(int height, int width, Card[] cards)
+        public class Hand
         {
-            Width = width;
-            Height = height;
-        }
-        public int Width;
-        public int Height;
-        public bool ShowStats;
-        public char[] CardLetters = { 'A', 'B', 'C', 'D', 'E' };
-        public void DrawHand(Card[] cards, bool ShowStats)
-        {
-            if (ShowStats)
+            public Hand(int height, int width, Card[] cards)
             {
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.Write("----------");
-                }
-                Console.Write('-');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write($"       ");
-                        Console.Write("  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write($"{cards[i].Name}       ");
-                        Console.Write(i + 1);
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("         ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("         ");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write("  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("Dmg:   ");
-                        Console.Write($"0{cards[i].Damage}");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write($"  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("HP:    ");
-                        Console.Write($"0{cards[i].HP}");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write("  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("Spd:   ");
-                        Console.Write($"0{cards[i].AttackSpeed}");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.Write("----------");
-                }
-                Console.Write('-');
-                Console.WriteLine();
+                Width = width;
+                Height = height;
             }
-            else
+            public int Width;
+            public int Height;
+            public bool ShowStats;
+            public char[] CardLetters = { 'A', 'B', 'C', 'D', 'E' };
+            public void DrawHand(Card[] cards, bool ShowStats)
             {
-                // first line
-                for (int i = 0; i < 5; i++)
+                if (ShowStats)
                 {
-                    Console.Write("----------");
-                }
-                Console.Write('-');
-                Console.WriteLine();
-                // second line
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
+                    for (int i = 0; i < 5; i++)
                     {
-                        Console.Write('|');
-                        Console.Write("         ");
+                        Console.Write("----------");
                     }
-                    else
+                    Console.Write('-');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
                     {
-                        Console.Write('|');
-                        Console.Write("?????????");
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write($"       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write($"{cards[i].Name}       ");
+                            Console.Write(i + 1);
+                        }
                     }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                // third line
-                for (int i = 0; i < 5; i++)
-                {
                     Console.Write('|');
-                    Console.Write("         ");
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("         ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("         ");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("Dmg:   ");
+                            Console.Write($"0{cards[i].Damage}");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write($"  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("HP:    ");
+                            Console.Write($"0{cards[i].HP}");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("Spd:   ");
+                            Console.Write($"0{cards[i].AttackSpeed}");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Console.Write("----------");
+                    }
+                    Console.Write('-');
+                    Console.WriteLine();
                 }
-                Console.Write('|');
-                Console.WriteLine();
-                // fourth line
-                for (int i = 0; i < 5; i++)
+                else
                 {
-                    if (cards[i] == null)
+                    // first line
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Console.Write("----------");
+                    }
+                    Console.Write('-');
+                    Console.WriteLine();
+                    // second line
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("         ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("?????????");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    // third line
+                    for (int i = 0; i < 5; i++)
                     {
                         Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write("  ");
+                        Console.Write("         ");
                     }
-                    else
+                    Console.Write('|');
+                    Console.WriteLine();
+                    // fourth line
+                    for (int i = 0; i < 5; i++)
                     {
-                        Console.Write('|');
-                        Console.Write("Dmg:   ");
-                        Console.Write("??");
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("Dmg:   ");
+                            Console.Write("??");
+                        }
                     }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    // fifth line
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("HP:    ");
+                            Console.Write("??");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (cards[i] == null)
+                        {
+                            Console.Write('|');
+                            Console.Write("       ");
+                            Console.Write("  ");
+                        }
+                        else
+                        {
+                            Console.Write('|');
+                            Console.Write("Spd:   ");
+                            Console.Write("??");
+                        }
+                    }
+                    Console.Write('|');
+                    Console.WriteLine();
+                    // sixth line
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Console.Write("----------");
+                    }
+                    Console.Write('-');
                 }
-                Console.Write('|');
-                Console.WriteLine();
-                // fifth line
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write("  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("HP:    ");
-                        Console.Write("??");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                for (int i = 0; i < 5; i++)
-                {
-                    if (cards[i] == null)
-                    {
-                        Console.Write('|');
-                        Console.Write("       ");
-                        Console.Write("  ");
-                    }
-                    else
-                    {
-                        Console.Write('|');
-                        Console.Write("Spd:   ");
-                        Console.Write("??");
-                    }
-                }
-                Console.Write('|');
-                Console.WriteLine();
-                // sixth line
-                for (int i = 0; i < 5; i++)
-                {
-                    Console.Write("----------");
-                }
-                Console.Write('-');
             }
         }
     }
